@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#FF8904" />
+  <meta name="description" content="Cardápio Kids: planejador de cardápio infantil com receitas adaptadas, lista de compras automática, quiz e passaporte de frutas." />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Cardápio Kids" />
+
+  <!-- Compartilhamento (WhatsApp, redes) -->
+  <meta property="og:title" content="Cardápio Kids 🍊 Planejador, Receitas & Jogos" />
+  <meta property="og:description" content="Monte o cardápio da semana, cozinhe junto e ganhe estrelas!" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="icons/icon-512.png" />
+
+  <title>Cardápio Kids • Planejador, Receitas & Jogos</title>
+
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip" href="#main">Pular para o conteúdo</a>
+
+  <!-- ============ TOPO ============ -->
+  <header class="topbar no-print">
+    <div class="topbar__inner">
+      <button type="button" class="brand" data-action="tab" data-tab="planner" aria-label="Ir para o cardápio">
+        <span class="brand__logo" data-mascot="mini"></span>
+        <span class="brand__text">
+          <strong>Cardápio <em>Kids</em></strong>
+          <small>planeja • cozinha • brinca</small>
+        </span>
+      </button>
+
+      <nav class="tabs" aria-label="Seções">
+        <button type="button" class="tab is-active" data-action="tab" data-tab="planner"><span class="tab__ico">📅</span><span>Cardápio</span></button>
+        <button type="button" class="tab" data-action="tab" data-tab="recipes"><span class="tab__ico">📖</span><span>Receitas</span></button>
+        <button type="button" class="tab" data-action="tab" data-tab="market"><span class="tab__ico">🛒</span><span>Mercado</span></button>
+        <button type="button" class="tab" data-action="tab" data-tab="fun"><span class="tab__ico">🎮</span><span>Diversão</span></button>
+      </nav>
+
+      <div class="top-actions">
+        <button type="button" class="star-pill" data-action="tab" data-tab="fun" data-scroll="badges" title="Minhas estrelas">
+          <span class="star-pill__star">⭐</span>
+          <span id="star-total">0</span>
+        </button>
+        <button type="button" class="icon-btn icon-btn--mint" data-action="open-shopping" title="Lista de compras" aria-label="Lista de compras">
+          🛍️<span id="shopping-badge" class="bubble-count">0</span>
+        </button>
+        <button type="button" class="icon-btn" data-action="open-settings" title="Configurações" aria-label="Configurações">⚙️</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="page">
+
+    <!-- ============ ABA 1: CARDÁPIO ============ -->
+    <section id="view-planner" class="view" data-view="planner">
+
+      <div class="hero-grid no-print">
+        <!-- Mascote + nível -->
+        <div class="card hero">
+          <button type="button" class="hero__mascot" data-action="mascot" aria-label="Ouvir dica da Tangi" data-mascot="big"></button>
+          <div class="hero__body">
+            <div class="speech" id="mascot-bubble">Oi! Eu sou a Tangi 🍊</div>
+            <h2 class="hero__hello" id="hello">Olá!</h2>
+            <div class="level">
+              <span class="level__icon" id="level-icon">🌱</span>
+              <div class="level__info">
+                <div class="level__row">
+                  <strong id="level-name">Sementinha</strong>
+                  <span id="level-next">faltam 8 ⭐</span>
+                </div>
+                <div class="meter"><div class="meter__fill meter__fill--stars" id="level-bar"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Missão arco-íris -->
+        <div class="card mission">
+          <div class="mission__head">
+            <span class="tag tag--sun">Missão da semana</span>
+            <span class="mission__count" id="rainbow-counter">0 / 8</span>
+          </div>
+          <h3 class="mission__title">🌈 Arco-Íris de Frutas</h3>
+          <p class="muted small">Coma frutas <b>diferentes</b> e marque <b>⭐ Comi!</b> para acender o arco-íris!</p>
+          <div class="fruit-dots" id="rainbow-dots"></div>
+          <div class="meter meter--rainbow"><div class="meter__fill" id="rainbow-progress"></div></div>
+        </div>
+
+        <!-- Controles -->
+        <div class="card controls">
+          <div class="controls__row">
+            <span class="label">Plano de</span>
+            <div class="segmented" role="group" aria-label="Período">
+              <button type="button" data-action="days" data-days="7" class="is-active">7 dias</button>
+              <button type="button" data-action="days" data-days="14">14 dias</button>
+            </div>
+          </div>
+          <div class="controls__btns">
+            <button type="button" class="btn btn--tangerine" data-action="randomize"><span class="dice" id="dice">🎲</span> Sortear</button>
+            <button type="button" class="btn btn--white" data-action="reset-plan">🔄 Base</button>
+            <button type="button" class="btn btn--mint" data-action="new-week" title="Guarda as estrelas e limpa os “Comi!”">🌅 Nova semana</button>
+            <button type="button" class="btn btn--white" data-action="print-plan">🖨️ Imprimir</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="print-only print-head">
+        <h1>Cardápio da Semana • <span id="print-name"></span></h1>
+        <p>Frutas naturais, comidinha de verdade e muita água 💧</p>
+      </div>
+
+      <div id="planner-grid" class="planner-grid"></div>
+    </section>
+
+    <!-- ============ ABA 2: RECEITAS ============ -->
+    <section id="view-recipes" class="view" data-view="recipes" hidden>
+      <div class="card section-head no-print">
+        <div class="section-head__top">
+          <div>
+            <h2 class="h2">📖 Livro de Receitas</h2>
+            <p class="muted small">Receitas adaptadas para o paladar infantil, com tarefas para a criança ajudar.</p>
+          </div>
+          <label class="search">
+            <span aria-hidden="true">🔍</span>
+            <input type="search" id="recipe-search" placeholder="Ingrediente, prato, airfryer…" autocomplete="off" />
+          </label>
+        </div>
+        <div class="pills" id="recipe-filters"></div>
+      </div>
+      <div id="recipes-grid" class="recipes-grid"></div>
+    </section>
+
+    <!-- ============ ABA 3: MERCADO ============ -->
+    <section id="view-market" class="view" data-view="market" hidden>
+      <div class="card section-head no-print">
+        <div class="section-head__top">
+          <div>
+            <h2 class="h2">🛒 Guia de Mercado</h2>
+            <p class="muted small">Opções práticas para emergências na lancheira ou no lanche da tarde.</p>
+          </div>
+          <label class="search">
+            <span aria-hidden="true">🔍</span>
+            <input type="search" id="market-search" placeholder="Tipo, sabor, categoria…" autocomplete="off" />
+          </label>
+        </div>
+
+        <div class="tips-row">
+          <div class="tip tip--sun">
+            <span class="tip__ico">💡</span>
+            <p><b>Regra de ouro:</b> todo snack pronto vai acompanhado de <b>1 fruta inteira</b> para garantir fibras e saciedade.</p>
+          </div>
+          <div class="tip tip--berry">
+            <span class="tip__ico">🔎</span>
+            <p><b>Lupa na frente:</b> embalagens com a lupa de “alto em açúcar, sódio ou gordura” são para de vez em quando.</p>
+          </div>
+          <div class="tip tip--mint">
+            <span class="tip__ico">📋</span>
+            <p><b>Lista curta:</b> quanto menos ingredientes (e mais nomes conhecidos), melhor. Nada de cafeína para crianças.</p>
+          </div>
+        </div>
+
+        <div class="pills" id="market-filters"></div>
+      </div>
+      <div id="market-grid" class="market-grid"></div>
+    </section>
+
+    <!-- ============ ABA 4: DIVERSÃO ============ -->
+    <section id="view-fun" class="view" data-view="fun" hidden>
+      <div class="fun-grid">
+        <div class="card quiz-card">
+          <div class="quiz-card__head">
+            <h2 class="h2">🎯 Verdade ou Mito?</h2>
+            <span class="tag tag--grape" id="quiz-progress">5 perguntas</span>
+          </div>
+          <div id="quiz-box" class="quiz-box"></div>
+        </div>
+
+        <div class="card passport-card">
+          <div class="quiz-card__head">
+            <h2 class="h2">🛂 Passaporte das Frutas</h2>
+            <span class="tag tag--mint" id="passport-count">0 carimbos</span>
+          </div>
+          <p class="muted small">Provou? Carimba! Vale mesmo se ainda não gostou: provar é coragem. 💪 Cada carimbo vale <b>2 ⭐</b>.</p>
+          <div id="passport-grid" class="passport-grid"></div>
+        </div>
+
+        <div class="card badges-card" id="badges">
+          <div class="quiz-card__head">
+            <h2 class="h2">🏅 Conquistas</h2>
+            <span class="tag tag--sun" id="badges-count">0 / 0</span>
+          </div>
+          <div class="stars-how">
+            <span>✅ Comi! = 1⭐</span><span>🛂 Carimbo = 2⭐</span><span>🧠 Acerto = 1⭐</span><span>👩‍🍳 Receita = 3⭐</span><span>🏅 Conquista = 5⭐</span>
+          </div>
+          <div id="badges-grid" class="badges-grid"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot no-print">
+    <p>Feito com 🧡 para famílias. As sugestões são gerais e não substituem a orientação do pediatra ou nutricionista.</p>
+  </footer>
+
+  <!-- ============ MODAL: MONTAR REFEIÇÃO ============ -->
+  <div class="modal" id="meal-modal" role="dialog" aria-modal="true" aria-labelledby="meal-title" hidden>
+    <div class="modal__box modal__box--wide">
+      <div class="modal__head modal__head--tangerine">
+        <div>
+          <span class="modal__kicker" id="meal-day">Dia 1</span>
+          <h3 id="meal-title">Montar refeição</h3>
+        </div>
+        <button type="button" class="close" data-action="close-modal" aria-label="Fechar">✕</button>
+      </div>
+      <div class="modal__body">
+        <div class="plate">
+          <div class="plate__top">
+            <p class="label">No pratinho:</p>
+            <button type="button" class="btn btn--sm btn--grape" data-action="suggest-combo">✨ Sugestão mágica</button>
+          </div>
+          <div id="combo-chips" class="combo-chips"></div>
+          <div id="combo-balance" class="balance"></div>
+        </div>
+
+        <div class="picker-tabs" role="tablist">
+          <button type="button" class="ptab is-active" data-action="picker" data-picker="recipes">🍳 Pratos</button>
+          <button type="button" class="ptab" data-action="picker" data-picker="fruits">🍓 Frutas</button>
+          <button type="button" class="ptab" data-action="picker" data-picker="drinks">🥤 Bebidas</button>
+          <button type="button" class="ptab" data-action="picker" data-picker="market">🛒 Práticos</button>
+        </div>
+        <label class="search search--sm">
+          <span aria-hidden="true">🔍</span>
+          <input type="search" id="picker-search" placeholder="Filtrar opções…" autocomplete="off" />
+        </label>
+        <div id="picker-grid" class="picker-grid"></div>
+      </div>
+      <div class="modal__foot">
+        <button type="button" class="btn btn--ghost-red" data-action="clear-slot">Esvaziar</button>
+        <button type="button" class="btn btn--mint btn--lg" data-action="save-slot">Salvar no cardápio ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: ADICIONAR A UM DIA ============ -->
+  <div class="modal" id="assign-modal" role="dialog" aria-modal="true" aria-labelledby="assign-title" hidden>
+    <div class="modal__box modal__box--sm">
+      <div class="modal__head modal__head--ink">
+        <h3 id="assign-title">➕ Colocar no cardápio</h3>
+        <button type="button" class="close" data-action="close-modal" aria-label="Fechar">✕</button>
+      </div>
+      <div class="modal__body">
+        <p id="assign-item" class="assign-item"></p>
+        <p class="label">Qual dia?</p>
+        <div id="assign-days" class="choice-grid choice-grid--days"></div>
+        <p class="label">Qual refeição?</p>
+        <div id="assign-meals" class="choice-grid"></div>
+      </div>
+      <div class="modal__foot">
+        <span></span>
+        <button type="button" class="btn btn--tangerine btn--lg" data-action="confirm-assign">Confirmar ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: RECEITA ============ -->
+  <div class="modal" id="recipe-modal" role="dialog" aria-modal="true" aria-labelledby="recipe-title" hidden>
+    <div class="modal__box modal__box--wide">
+      <div class="modal__head recipe-head" id="recipe-head">
+        <div class="recipe-head__emoji" id="recipe-emoji">🍳</div>
+        <div class="recipe-head__txt">
+          <span class="modal__kicker" id="recipe-meta"></span>
+          <h3 id="recipe-title">Receita</h3>
+        </div>
+        <button type="button" class="close" data-action="close-modal" aria-label="Fechar">✕</button>
+      </div>
+      <div class="modal__body" id="recipe-body"></div>
+      <div class="modal__foot modal__foot--wrap" id="recipe-foot"></div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: MODO COZINHEIRA ============ -->
+  <div class="modal modal--cook" id="cook-modal" role="dialog" aria-modal="true" aria-labelledby="cook-title" hidden>
+    <div class="modal__box modal__box--cook">
+      <div class="modal__head modal__head--berry">
+        <div>
+          <span class="modal__kicker" id="cook-step-label">Passo 1</span>
+          <h3 id="cook-title">Modo Cozinheira</h3>
+        </div>
+        <button type="button" class="close" data-action="close-modal" aria-label="Fechar">✕</button>
+      </div>
+      <div class="cook">
+        <div class="cook__dots" id="cook-dots"></div>
+        <div class="cook__stage" id="cook-stage"></div>
+      </div>
+      <div class="modal__foot">
+        <button type="button" class="btn btn--white btn--lg" data-action="cook-prev">◀ Voltar</button>
+        <button type="button" class="btn btn--berry btn--lg" data-action="cook-next" id="cook-next">Próximo ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: LISTA DE COMPRAS ============ -->
+  <div class="modal" id="shopping-modal" role="dialog" aria-modal="true" aria-labelledby="shop-title" hidden>
+    <div class="modal__box modal__box--wide">
+      <div class="modal__head modal__head--mint">
+        <div>
+          <span class="modal__kicker" id="shop-sub">Gerada a partir do cardápio</span>
+          <h3 id="shop-title">🛍️ Lista de Compras</h3>
+        </div>
+        <button type="button" class="close" data-action="close-modal" aria-label="Fechar">✕</button>
+      </div>
+      <div class="shop-progress">
+        <span class="cart-run" id="cart-run">🛒</span>
+        <div class="meter"><div class="meter__fill meter__fill--mint" id="shop-bar"></div></div>
+        <b id="shop-pct">0%</b>
+      </div>
+      <div class="modal__body" id="shopping-content"></div>
+      <div class="modal__foot modal__foot--wrap">
+        <button type="button" class="btn btn--white btn--sm" data-action="shop-uncheck">↺ Desmarcar</button>
+        <button type="button" class="btn btn--white btn--sm" data-action="print-shopping">🖨️ Imprimir</button>
+        <button type="button" class="btn btn--white btn--sm" data-action="copy-shopping">📋 Copiar</button>
+        <button type="button" class="btn btn--mint btn--sm" data-action="share-shopping">📲 Enviar no WhatsApp</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: CONFIGURAÇÕES ============ -->
+  <div class="modal" id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-title" hidden>
+    <div class="modal__box modal__box--sm">
+      <div class="modal__head modal__head--ink">
+        <h3 id="settings-title">⚙️ Configurações</h3>
+        <button type="button" class="close" data-action="close-modal" aria-label="Fechar">✕</button>
+      </div>
+      <div class="modal__body">
+        <label class="field">
+          <span class="label">Nome da criança</span>
+          <input type="text" id="set-name" maxlength="20" placeholder="Ex.: Lara" />
+        </label>
+        <p class="label">Escolha um bichinho</p>
+        <div id="set-avatars" class="avatar-grid"></div>
+        <p class="label">Títulos no</p>
+        <div class="segmented segmented--full" role="group">
+          <button type="button" data-action="set-gender" data-g="f">👧 Feminino</button>
+          <button type="button" data-action="set-gender" data-g="m">👦 Masculino</button>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="set-sound" />
+          <span class="switch__track"><span class="switch__thumb"></span></span>
+          <span>🔊 Sons e vibração</span>
+        </label>
+
+        <div class="settings-box">
+          <p class="label">Backup (os dados ficam só neste aparelho)</p>
+          <div class="controls__btns">
+            <button type="button" class="btn btn--white btn--sm" data-action="export">⬇️ Salvar backup</button>
+            <label class="btn btn--white btn--sm">⬆️ Restaurar<input type="file" id="import-file" accept="application/json,.json" hidden /></label>
+            <button type="button" class="btn btn--ghost-red btn--sm" data-action="reset-all">🗑️ Zerar tudo</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal__foot">
+        <span></span>
+        <button type="button" class="btn btn--tangerine btn--lg" data-action="save-settings">Pronto ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL: SUBIU DE NÍVEL ============ -->
+  <div class="modal" id="level-modal" role="dialog" aria-modal="true" aria-labelledby="lvl-title" hidden>
+    <div class="modal__box modal__box--sm levelup">
+      <div class="levelup__rays"></div>
+      <div class="levelup__icon" id="lvl-icon">🌟</div>
+      <p class="modal__kicker">Subiu de nível!</p>
+      <h3 id="lvl-title">Novo nível</h3>
+      <p class="muted" id="lvl-sub"></p>
+      <button type="button" class="btn btn--tangerine btn--lg" data-action="close-modal">Eba! 🎉</button>
+    </div>
+  </div>
+
+  <div id="single-print-area" class="print-area"></div>
+  <canvas id="confetti" class="confetti" aria-hidden="true"></canvas>
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
